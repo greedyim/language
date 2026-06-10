@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f7f4ee">
+    <meta name="description" content="高頻度英語フレーズをスワイプで覚える片手操作向けWebアプリ">
+    <title>Phraseflow</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./assets/icon.svg">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./phrases.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <header class="topbar">
+        <div class="brand-lockup" aria-label="Phraseflow">
+          <img src="./assets/icon.svg" alt="" class="brand-mark">
+          <div>
+            <h1>Phraseflow</h1>
+            <p id="deckSummary">Core deck</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="exportButton" type="button" title="履歴を書き出す" aria-label="履歴を書き出す">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/></svg>
+          </button>
+          <label class="icon-button file-button" title="履歴を読み込む" aria-label="履歴を読み込む">
+            <input id="importInput" type="file" accept="application/json">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V9m0 0 4 4m-4-4-4 4M5 7V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/></svg>
+          </label>
+        </div>
+      </header>
+
+      <section class="stats-strip" aria-label="学習状況">
+        <div class="stat">
+          <span id="statSeen">0</span>
+          <small>seen</small>
+        </div>
+        <div class="stat">
+          <span id="statKnown">0</span>
+          <small>known</small>
+        </div>
+        <div class="stat">
+          <span id="statReview">0</span>
+          <small>review</small>
+        </div>
+        <div class="progress-ring" id="progressRing" aria-hidden="true">
+          <span id="progressPercent">0%</span>
+        </div>
+      </section>
+
+      <nav class="deck-tabs" aria-label="デッキ">
+        <button class="tab is-active" type="button" data-filter="all">All</button>
+        <button class="tab" type="button" data-filter="new">New</button>
+        <button class="tab" type="button" data-filter="review">Review</button>
+      </nav>
+
+      <section class="stage" aria-label="フレーズカード">
+        <div class="swipe-label left" id="leftLabel">Review</div>
+        <article class="phrase-card" id="phraseCard" tabindex="0">
+          <div class="card-meta">
+            <span id="cardRank">rank</span>
+            <span id="cardGram">n-gram</span>
+          </div>
+          <div class="phrase-text" id="phraseText"></div>
+          <div class="phrase-context" id="phraseContext"></div>
+          <div class="answer-panel" id="answerPanel" hidden>
+            <p class="meaning" id="meaningText"></p>
+            <p class="note" id="noteText"></p>
+            <div class="example-block">
+              <p id="exampleText"></p>
+              <small id="exampleJa"></small>
+            </div>
+          </div>
+          <footer class="source-line" id="sourceLine"></footer>
+        </article>
+        <div class="swipe-label right" id="rightLabel">Known</div>
+      </section>
+
+      <section class="thumb-zone" aria-label="カード操作">
+        <button class="action-button review" id="reviewButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          <span>復習</span>
+        </button>
+        <button class="icon-button undo-button" id="undoButton" type="button" title="戻す" aria-label="直前の操作を戻す">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-1"/></svg>
+        </button>
+        <button class="action-button known" id="knownButton" type="button">
+          <span>覚えた</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </section>
+    </main>
+  </body>
+</html>

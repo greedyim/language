@@ -1,0 +1,17 @@
+{
+  "name": "Phraseflow",
+  "short_name": "Phraseflow",
+  "description": "高頻度英語フレーズをスワイプで覚える片手操作向けWebアプリ",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ee",
+  "theme_color": "#f7f4ee",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

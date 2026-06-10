@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Phraseflow">
+  <rect width="128" height="128" rx="30" fill="#f7f4ee"/>
+  <path d="M29 82c12 16 39 20 58 7 17-12 22-36 10-51-13-16-39-18-58-6-18 12-22 34-10 50Z" fill="#0f766e"/>
+  <path d="M38 73c9 11 29 13 43 4 13-8 17-25 8-36-9-11-29-12-43-3-13 9-17 24-8 35Z" fill="#fff8e8"/>
+  <path d="M48 53h32M48 66h23" fill="none" stroke="#111827" stroke-width="8" stroke-linecap="round"/>
+  <path d="M92 77 77 92l-7-8" fill="none" stroke="#e0523f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
