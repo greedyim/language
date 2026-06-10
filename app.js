@@ -3,7 +3,12 @@
   const EXPORT_VERSION = 1;
   const DAY = 24 * 60 * 60 * 1000;
   const HOUR = 60 * 60 * 1000;
-  const phrases = Array.isArray(window.PHRASES) ? window.PHRASES : [];
+  const DECK_MANIFEST_URL = "./data/core-10000/manifest.json";
+  const seedPhrases = Array.isArray(window.PHRASES) ? window.PHRASES : [];
+  let phrases = [];
+  let deckMeta = null;
+  let loadingDeck = true;
+  let deckLoadError = null;
 
   const els = {
     deckSummary: document.querySelector("#deckSummary"),
@@ -100,6 +105,14 @@
   }
 
   function buildQueue(focusId) {
+    if (loadingDeck && phrases.length === 0) {
+      queue = [];
+      currentIndex = 0;
+      revealed = false;
+      render();
+      return;
+    }
+
     queue = phrases
       .filter((phrase) => {
         if (filter === "new") return !hasSeen(phrase);
@@ -149,6 +162,40 @@
   }
 
   function renderEmpty() {
+    if (loadingDeck) {
+      els.card.classList.add("is-empty");
+      els.cardRank.textContent = "loading";
+      els.cardGram.textContent = "10,000";
+      els.phraseText.textContent = "Loading";
+      els.phraseContext.textContent = "Core 10,000";
+      els.meaningText.textContent = "高頻度コロケーションデッキを読み込んでいます。";
+      els.noteText.textContent = "初回だけ少し時間がかかることがあります。";
+      renderFocusWords(null);
+      els.exampleText.textContent = "Preparing high-frequency chunks.";
+      els.exampleJa.textContent = "英語を読むための頻出チャンクを準備中です。";
+      els.sourceLine.textContent = "";
+      els.answerPanel.hidden = false;
+      els.deckSummary.textContent = "Loading Core 10,000";
+      return;
+    }
+
+    if (deckLoadError && phrases.length === seedPhrases.length) {
+      els.card.classList.add("is-empty");
+      els.cardRank.textContent = "fallback";
+      els.cardGram.textContent = `${phrases.length} cards`;
+      els.phraseText.textContent = "Seed deck";
+      els.phraseContext.textContent = "offline fallback";
+      els.meaningText.textContent = "10,000問デッキを読み込めなかったため、内蔵MVPデッキを表示しています。";
+      els.noteText.textContent = "公開URLまたはローカルHTTPサーバーから開くと大規模デッキを読み込めます。";
+      renderFocusWords(null);
+      els.exampleText.textContent = "Open the app through a web server.";
+      els.exampleJa.textContent = "Webサーバー経由で開くと大規模デッキを利用できます。";
+      els.sourceLine.textContent = deckLoadError;
+      els.answerPanel.hidden = false;
+      els.deckSummary.textContent = "Seed deck fallback";
+      return;
+    }
+
     const label = filter === "review" ? "Review clear" : filter === "new" ? "No new cards" : "Session clear";
     els.card.classList.add("is-empty");
     els.cardRank.textContent = "done";
@@ -174,7 +221,8 @@
   }
 
   function updateStats() {
-    const records = Object.values(state.records);
+    const activeIds = new Set(phrases.map((phrase) => phrase.id));
+    const records = Object.values(state.records).filter((record) => activeIds.has(record.id));
     const seen = records.filter((record) => record.seen > 0).length;
     const known = records.filter((record) => record.status === "known").length;
     const review = records.filter((record) => record.status === "review").length;
@@ -188,9 +236,10 @@
   }
 
   function labelForFilter(value) {
-    if (value === "new") return "New deck";
-    if (value === "review") return "Review deck";
-    return "Core deck";
+    const title = deckMeta?.title || "Core deck";
+    if (value === "new") return `New · ${title}`;
+    if (value === "review") return `Review · ${title}`;
+    return title;
   }
 
   function contextLabel(phrase) {
@@ -473,6 +522,45 @@
     });
   }
 
+  async function loadCoreDeck() {
+    loadingDeck = true;
+    deckLoadError = null;
+    buildQueue();
+
+    try {
+      const manifestResponse = await fetch(DECK_MANIFEST_URL);
+      if (!manifestResponse.ok) {
+        throw new Error(`manifest ${manifestResponse.status}`);
+      }
+      const manifest = await manifestResponse.json();
+      const baseUrl = new URL(".", new URL(DECK_MANIFEST_URL, window.location.href));
+      const chunkResponses = await Promise.all(
+        manifest.chunks.map(async (chunk) => {
+          const response = await fetch(new URL(chunk.file, baseUrl));
+          if (!response.ok) {
+            throw new Error(`${chunk.file} ${response.status}`);
+          }
+          return response.json();
+        })
+      );
+
+      deckMeta = manifest;
+      phrases = chunkResponses.flat();
+      if (phrases.length !== manifest.total) {
+        throw new Error(`expected ${manifest.total}, got ${phrases.length}`);
+      }
+    } catch (error) {
+      console.warn("Could not load Core 10,000 deck", error);
+      deckLoadError = error.message || "deck load failed";
+      deckMeta = { title: "Seed deck", total: seedPhrases.length };
+      phrases = seedPhrases;
+    } finally {
+      loadingDeck = false;
+      history = [];
+      buildQueue();
+    }
+  }
+
   els.card.addEventListener("pointerdown", onPointerDown);
   els.card.addEventListener("pointermove", onPointerMove);
   els.card.addEventListener("pointerup", onPointerUp);
@@ -512,6 +600,6 @@
   });
 
   setFullscreenCard(isFullscreenCard, false);
-  buildQueue();
+  loadCoreDeck();
   registerServiceWorker();
 })();

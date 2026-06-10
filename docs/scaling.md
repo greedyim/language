@@ -35,7 +35,7 @@ The front side should always be a real phrase or collocation. A card can still t
 
 ## Storage
 
-The MVP uses `phrases.js` and `localStorage`. That is fine for a few hundred cards, but not for tens of thousands of words and hundreds of thousands of phrases.
+The current public deck uses chunked static JSON in `data/core-10000/`. `phrases.js` remains only as a small fallback deck. `localStorage` is still used for review state, which is acceptable for the first 10,000 cards but should not be the final storage layer for hundreds of thousands of cards.
 
 The public version should use:
 
@@ -74,3 +74,14 @@ This lets the app update corpus data without losing a learner's history.
 5. Publish versioned deck chunks as static assets.
 
 The important product rule is that the prompt should be the usage unit. A single word should not stand alone; it should be learned through collocations that disambiguate it in real use.
+
+## Current 10,000-card Deck
+
+`scripts/build_ngram_deck.py` builds `data/core-10000/` from the public Google Books Ngram frequency lists.
+
+The current deck:
+
+- Prioritizes high-frequency English 2-, 3-, 4-, and 5-grams
+- Uses English Fiction as high-frequency backfill after deduplication and quality filtering
+- Rejects obvious publishing boilerplate such as copied/scanned/eBook rights notices
+- Keeps stable IDs, source ranks, frequencies, source list names, and target words

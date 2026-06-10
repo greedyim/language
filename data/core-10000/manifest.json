@@ -1,0 +1,80 @@
+{
+  "id": "core-10000",
+  "title": "Core 10,000",
+  "version": 1,
+  "description": "High-frequency English n-gram and collocation cards for reading coverage.",
+  "source": "orgtre/google-books-ngram-frequency, Google Books Ngram Corpus v3 20200217",
+  "sourceUrl": "https://github.com/orgtre/google-books-ngram-frequency",
+  "license": "Creative Commons Attribution 3.0 Unported, as stated by source repository",
+  "total": 10000,
+  "chunkSize": 1000,
+  "chunks": [
+    {
+      "file": "chunk-01.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-02.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-03.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-04.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-05.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-06.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-07.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-08.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-09.json",
+      "count": 1000
+    },
+    {
+      "file": "chunk-10.json",
+      "count": 1000
+    }
+  ],
+  "stats": {
+    "rawCounts": {
+      "english-2": 5000,
+      "english-3": 3000,
+      "english-4": 1000,
+      "english-5": 1000,
+      "english-fiction-2": 5000,
+      "english-fiction-3": 3000,
+      "english-fiction-4": 1000,
+      "english-fiction-5": 1000
+    },
+    "selectedBySource": {
+      "english": 9846,
+      "english-fiction": 154
+    },
+    "selectedByGram": {
+      "2": 5093,
+      "3": 2977,
+      "4": 967,
+      "5": 963
+    },
+    "rejectedByQualityFilter": 125,
+    "sourceLists": {
+      "english": "Google Books Ngram v3 / English 2010-2019",
+      "english-fiction": "Google Books Ngram v3 / English Fiction 2010-2019"
+    }
+  }
+}

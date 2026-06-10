@@ -1,4 +1,8 @@
-const CACHE_NAME = "phraseflow-v2";
+const CACHE_NAME = "phraseflow-v3";
+const DECK_CHUNKS = Array.from(
+  { length: 10 },
+  (_, index) => `./data/core-10000/chunk-${String(index + 1).padStart(2, "0")}.json`
+);
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -7,7 +11,9 @@ const APP_SHELL = [
   "./app.js",
   "./manifest.webmanifest",
   "./assets/icon.svg",
-  "./NOTICE.md"
+  "./NOTICE.md",
+  "./data/core-10000/manifest.json",
+  ...DECK_CHUNKS
 ];
 
 self.addEventListener("install", (event) => {

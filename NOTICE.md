@@ -1,6 +1,6 @@
 # Data Attribution
 
-This app includes a small, manually selected seed deck derived from high-frequency English n-gram lists published by `orgtre/google-books-ngram-frequency`.
+This app includes a 10,000-card high-frequency English n-gram deck derived from English and English Fiction n-gram lists published by `orgtre/google-books-ngram-frequency`.
 
 Source repository:
 
@@ -12,4 +12,4 @@ Underlying corpus:
 
 Google Books Ngram Corpus Version 3, 20200217.
 
-This app does not redistribute the full source corpus or full frequency lists. It includes selected phrase strings, n-gram sizes, rank positions, and frequency counts for an MVP learning deck, with manually authored Japanese meanings and examples.
+This app does not redistribute the full source corpus or full frequency lists. It includes selected high-frequency n-gram strings, n-gram sizes, rank positions, and frequency counts for a learning deck. The app also includes a small manually authored fallback deck.
