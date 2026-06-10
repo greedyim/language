@@ -30,6 +30,7 @@
     exampleJa: document.querySelector("#exampleJa"),
     sourceLine: document.querySelector("#sourceLine"),
     focusWordList: document.querySelector("#focusWordList"),
+    exampleBlock: document.querySelector(".example-block"),
     leftLabel: document.querySelector("#leftLabel"),
     rightLabel: document.querySelector("#rightLabel"),
     reviewButton: document.querySelector("#reviewButton"),
@@ -154,8 +155,7 @@
     els.meaningText.textContent = phrase.meaning;
     els.noteText.textContent = phrase.note;
     renderFocusWords(phrase);
-    els.exampleText.textContent = phrase.example;
-    els.exampleJa.textContent = phrase.exampleJa;
+    renderExample(phrase.example, phrase.exampleJa);
     els.sourceLine.textContent = `${phrase.source} · ${phrase.freq.toLocaleString()} hits`;
     els.answerPanel.hidden = !revealed;
     els.deckSummary.textContent = `${labelForFilter(filter)} · ${currentIndex + 1}/${queue.length}`;
@@ -171,8 +171,7 @@
       els.meaningText.textContent = "高頻度コロケーションデッキを読み込んでいます。";
       els.noteText.textContent = "初回だけ少し時間がかかることがあります。";
       renderFocusWords(null);
-      els.exampleText.textContent = "Preparing high-frequency chunks.";
-      els.exampleJa.textContent = "英語を読むための頻出チャンクを準備中です。";
+      renderExample("Preparing high-frequency chunks.", "英語を読むための頻出チャンクを準備中です。", false);
       els.sourceLine.textContent = "";
       els.answerPanel.hidden = false;
       els.deckSummary.textContent = "Loading Core 10,000";
@@ -188,8 +187,7 @@
       els.meaningText.textContent = "10,000問デッキを読み込めなかったため、内蔵MVPデッキを表示しています。";
       els.noteText.textContent = "公開URLまたはローカルHTTPサーバーから開くと大規模デッキを読み込めます。";
       renderFocusWords(null);
-      els.exampleText.textContent = "Open the app through a web server.";
-      els.exampleJa.textContent = "Webサーバー経由で開くと大規模デッキを利用できます。";
+      renderExample("Open the app through a web server.", "Webサーバー経由で開くと大規模デッキを利用できます。", false);
       els.sourceLine.textContent = deckLoadError;
       els.answerPanel.hidden = false;
       els.deckSummary.textContent = "Seed deck fallback";
@@ -205,8 +203,7 @@
     els.meaningText.textContent = filter === "review" ? "復習待ちのカードはありません。" : "このデッキは一通り終わりました。";
     els.noteText.textContent = "履歴はこの端末に保存されています。";
     renderFocusWords(null);
-    els.exampleText.textContent = "Switch decks or keep practicing tomorrow.";
-    els.exampleJa.textContent = "デッキを切り替えるか、また明日続けられます。";
+    renderExample("Switch decks or keep practicing tomorrow.", "デッキを切り替えるか、また明日続けられます。", false);
     els.sourceLine.textContent = "";
     els.answerPanel.hidden = false;
     els.deckSummary.textContent = `${labelForFilter(filter)} · 0/${queue.length}`;
@@ -265,6 +262,13 @@
     });
     els.focusWordList.replaceChildren(fragment);
     els.focusWordList.hidden = false;
+  }
+
+  function renderExample(example, exampleJa, hideWhenEmpty = true) {
+    const hasExample = Boolean(example || exampleJa);
+    els.exampleBlock.hidden = hideWhenEmpty && !hasExample;
+    els.exampleText.textContent = example || "";
+    els.exampleJa.textContent = exampleJa || "";
   }
 
   function toggleReveal() {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "phraseflow-v3";
+const CACHE_NAME = "phraseflow-v4";
 const DECK_CHUNKS = Array.from(
   { length: 10 },
   (_, index) => `./data/core-10000/chunk-${String(index + 1).padStart(2, "0")}.json`

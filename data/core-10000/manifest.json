@@ -62,16 +62,38 @@
       "english-fiction-5": 1000
     },
     "selectedBySource": {
-      "english": 9846,
-      "english-fiction": 154
+      "english": 7161,
+      "english-fiction": 2839
     },
     "selectedByGram": {
-      "2": 5093,
-      "3": 2977,
-      "4": 967,
-      "5": 963
+      "2": 4140,
+      "3": 3461,
+      "4": 1219,
+      "5": 1180
     },
-    "rejectedByQualityFilter": 125,
+    "selectedByQualityTier": {
+      "core": 7471,
+      "support": 2529
+    },
+    "manualExamples": 112,
+    "rejectedByQualityFilter": 16985,
+    "rejectedByReason": {
+      "function_words_only": 7057,
+      "low_value_exact": 249,
+      "pronoun_stub": 2832,
+      "punctuation_fragment": 1140,
+      "source_noise": 192,
+      "token_fragment": 351,
+      "too_short": 45,
+      "trailing_function_word": 4643,
+      "trailing_modifier": 476
+    },
+    "recoveredAsSupport": {
+      "collocation_stem": 1186,
+      "grammar_pattern": 629,
+      "modifier_pattern": 132,
+      "pronoun_pattern": 582
+    },
     "sourceLists": {
       "english": "Google Books Ngram v3 / English 2010-2019",
       "english-fiction": "Google Books Ngram v3 / English Fiction 2010-2019"

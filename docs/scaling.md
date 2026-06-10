@@ -70,7 +70,7 @@ This lets the app update corpus data without losing a learner's history.
 1. Import corpus frequency files and dictionary/collocation sources.
 2. Normalize spellings, contractions, punctuation, and case.
 3. Score candidates by frequency, usefulness, ambiguity reduction, and learnability.
-4. Generate cards with stable IDs and short examples.
+4. Generate cards with stable IDs, then attach reviewed manual examples when available.
 5. Publish versioned deck chunks as static assets.
 
 The important product rule is that the prompt should be the usage unit. A single word should not stand alone; it should be learned through collocations that disambiguate it in real use.
@@ -83,5 +83,7 @@ The current deck:
 
 - Prioritizes high-frequency English 2-, 3-, 4-, and 5-grams
 - Uses English Fiction as high-frequency backfill after deduplication and quality filtering
-- Rejects obvious publishing boilerplate such as copied/scanned/eBook rights notices
+- Rejects obvious publishing boilerplate, short function-word fragments, punctuation fragments, and other low-value candidates
+- Keeps strict `core` cards first, then adds lower-priority `support` cards only to preserve 10,000-card coverage
+- Shows examples only when they are manually written and marked with `exampleStatus: "manual"`
 - Keeps stable IDs, source ranks, frequencies, source list names, and target words
