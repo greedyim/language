@@ -24,21 +24,26 @@
     exampleText: document.querySelector("#exampleText"),
     exampleJa: document.querySelector("#exampleJa"),
     sourceLine: document.querySelector("#sourceLine"),
+    focusWordList: document.querySelector("#focusWordList"),
     leftLabel: document.querySelector("#leftLabel"),
     rightLabel: document.querySelector("#rightLabel"),
     reviewButton: document.querySelector("#reviewButton"),
     knownButton: document.querySelector("#knownButton"),
     undoButton: document.querySelector("#undoButton"),
+    cardModeButton: document.querySelector("#cardModeButton"),
     exportButton: document.querySelector("#exportButton"),
     importInput: document.querySelector("#importInput")
   };
 
   let state = loadState();
   let filter = state.filter || "all";
+  let isFullscreenCard = Boolean(state.fullscreenCard);
   let queue = [];
   let currentIndex = 0;
   let revealed = false;
   let pointer = null;
+  const touchPoints = new Map();
+  let pinch = null;
   let history = [];
   let locked = false;
 
@@ -54,6 +59,7 @@
 
   function saveState() {
     state.filter = filter;
+    state.fullscreenCard = isFullscreenCard;
     state.updatedAt = Date.now();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
@@ -131,9 +137,10 @@
     els.cardRank.textContent = `rank #${phrase.rank.toLocaleString()}`;
     els.cardGram.textContent = `${phrase.gram}-gram`;
     els.phraseText.textContent = phrase.text;
-    els.phraseContext.textContent = phrase.tags.slice(0, 3).join(" / ");
+    els.phraseContext.textContent = contextLabel(phrase);
     els.meaningText.textContent = phrase.meaning;
     els.noteText.textContent = phrase.note;
+    renderFocusWords(phrase);
     els.exampleText.textContent = phrase.example;
     els.exampleJa.textContent = phrase.exampleJa;
     els.sourceLine.textContent = `${phrase.source} · ${phrase.freq.toLocaleString()} hits`;
@@ -150,6 +157,7 @@
     els.phraseContext.textContent = labelForFilter(filter);
     els.meaningText.textContent = filter === "review" ? "復習待ちのカードはありません。" : "このデッキは一通り終わりました。";
     els.noteText.textContent = "履歴はこの端末に保存されています。";
+    renderFocusWords(null);
     els.exampleText.textContent = "Switch decks or keep practicing tomorrow.";
     els.exampleJa.textContent = "デッキを切り替えるか、また明日続けられます。";
     els.sourceLine.textContent = "";
@@ -185,10 +193,47 @@
     return "Core deck";
   }
 
+  function contextLabel(phrase) {
+    if (Array.isArray(phrase.targetWords) && phrase.targetWords.length > 0) {
+      return phrase.targetWords.slice(0, 3).map((item) => item.lemma || item).join(" / ");
+    }
+    return (phrase.tags || []).slice(0, 3).join(" / ");
+  }
+
+  function renderFocusWords(phrase) {
+    if (!phrase || !Array.isArray(phrase.targetWords) || phrase.targetWords.length === 0) {
+      els.focusWordList.hidden = true;
+      els.focusWordList.replaceChildren();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    phrase.targetWords.slice(0, 6).forEach((item) => {
+      const chip = document.createElement("span");
+      chip.className = "focus-word-chip";
+      chip.textContent = item.lemma || item;
+      fragment.append(chip);
+    });
+    els.focusWordList.replaceChildren(fragment);
+    els.focusWordList.hidden = false;
+  }
+
   function toggleReveal() {
     if (!currentPhrase()) return;
     revealed = !revealed;
     els.answerPanel.hidden = !revealed;
+  }
+
+  function setFullscreenCard(value, persist = true) {
+    isFullscreenCard = value;
+    document.body.classList.toggle("is-fullscreen-card", isFullscreenCard);
+    els.cardModeButton.setAttribute("aria-pressed", String(isFullscreenCard));
+    els.cardModeButton.setAttribute(
+      "aria-label",
+      isFullscreenCard ? "カードの全画面表示を閉じる" : "カードを全画面表示"
+    );
+    els.cardModeButton.title = isFullscreenCard ? "全画面表示を閉じる" : "全画面表示";
+    if (persist) saveState();
   }
 
   function grade(kind) {
@@ -275,8 +320,36 @@
     els.card.classList.toggle("is-review", showLeft);
   }
 
+  function distanceBetween(points) {
+    const [a, b] = points;
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+
+  function startPinchIfReady() {
+    if (touchPoints.size !== 2) return false;
+    const points = Array.from(touchPoints.values());
+    pinch = {
+      startDistance: distanceBetween(points),
+      activated: false
+    };
+    pointer = null;
+    resetCardMotion();
+    els.card.classList.add("is-pinching");
+    return true;
+  }
+
   function onPointerDown(event) {
     if (locked || !currentPhrase()) return;
+    if (event.target.closest("button, input, label")) return;
+
+    if (event.pointerType === "touch") {
+      touchPoints.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (startPinchIfReady()) {
+        els.card.setPointerCapture(event.pointerId);
+        return;
+      }
+    }
+
     pointer = {
       id: event.pointerId,
       startX: event.clientX,
@@ -290,6 +363,23 @@
   }
 
   function onPointerMove(event) {
+    if (event.pointerType === "touch" && touchPoints.has(event.pointerId)) {
+      touchPoints.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    }
+
+    if (pinch && touchPoints.size >= 2) {
+      const scale = distanceBetween(Array.from(touchPoints.values())) / pinch.startDistance;
+      if (!pinch.activated && scale > 1.16) {
+        pinch.activated = true;
+        setFullscreenCard(true);
+      }
+      if (!pinch.activated && scale < 0.78) {
+        pinch.activated = true;
+        setFullscreenCard(false);
+      }
+      return;
+    }
+
     if (!pointer || pointer.id !== event.pointerId) return;
     pointer.dx = event.clientX - pointer.startX;
     pointer.dy = event.clientY - pointer.startY;
@@ -303,6 +393,22 @@
   }
 
   function onPointerUp(event) {
+    if (event.pointerType === "touch") {
+      touchPoints.delete(event.pointerId);
+    }
+
+    if (pinch) {
+      const wasPinch = pinch.activated || touchPoints.size > 0;
+      if (touchPoints.size < 2) {
+        pinch = null;
+        els.card.classList.remove("is-pinching");
+      }
+      if (wasPinch) {
+        resetCardMotion();
+        return;
+      }
+    }
+
     if (!pointer || pointer.id !== event.pointerId) return;
     const { dx, dy, moved } = pointer;
     pointer = null;
@@ -372,6 +478,9 @@
   els.card.addEventListener("pointerup", onPointerUp);
   els.card.addEventListener("pointercancel", () => {
     pointer = null;
+    pinch = null;
+    touchPoints.clear();
+    els.card.classList.remove("is-pinching");
     resetCardMotion();
   });
   els.card.addEventListener("keydown", (event) => {
@@ -381,11 +490,17 @@
     }
     if (event.key === "ArrowRight") grade("known");
     if (event.key === "ArrowLeft") grade("review");
+    if (event.key.toLowerCase() === "f") setFullscreenCard(!isFullscreenCard);
   });
 
   els.reviewButton.addEventListener("click", () => grade("review"));
   els.knownButton.addEventListener("click", () => grade("known"));
   els.undoButton.addEventListener("click", undo);
+  els.cardModeButton.addEventListener("pointerdown", (event) => event.stopPropagation());
+  els.cardModeButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setFullscreenCard(!isFullscreenCard);
+  });
   els.exportButton.addEventListener("click", exportProgress);
   els.importInput.addEventListener("change", (event) => importProgress(event.target.files[0]));
   els.tabs.forEach((tab) => {
@@ -396,6 +511,7 @@
     });
   });
 
+  setFullscreenCard(isFullscreenCard, false);
   buildQueue();
   registerServiceWorker();
 })();

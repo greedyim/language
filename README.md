@@ -10,6 +10,7 @@ iPhoneで片手操作しやすい、スワイプ式の英語フレーズ暗記We
 - 進捗はブラウザのlocalStorageに保存
 - 復習、新規、全体のデッキ切り替え
 - 学習履歴のJSONエクスポートとインポート
+- カードのピンチ拡大、またはカード内アイコンで全画面表示
 - PWA用manifestとservice worker
 
 ## 使い方
@@ -50,7 +51,7 @@ python -m http.server 4173
 
 GitHub Pagesで公開する場合は、このリポジトリの `main` ブランチ直下をPagesのソースに指定します。
 
-予定URL:
+公開URL:
 
 ```text
 https://greedyim.github.io/language/
@@ -58,7 +59,11 @@ https://greedyim.github.io/language/
 
 ## 次の拡張
 
+- 単語単体ではなく、対象語を含むコロケーションカードで語彙を覚えられるようにする
+- 数万単語、数十万フレーズを扱うためのチャンク化JSONとIndexedDB保存
 - CSV/JSONからデッキを差し替えられる管理画面
 - CEFRや用途別タグの追加
 - SupabaseやFirebaseによる任意ログイン同期
 - 一般公開向けの利用規約、プライバシーポリシー、データ出典ページ
+
+大規模化の方針は `docs/scaling.md` にまとめています。

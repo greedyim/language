@@ -137,6 +137,10 @@ h1 {
   stroke-linejoin: round;
 }
 
+.icon-collapse {
+  display: none;
+}
+
 .file-button {
   position: relative;
 }
@@ -238,7 +242,7 @@ h1 {
   gap: 16px;
   outline: none;
   overflow: hidden auto;
-  touch-action: pan-y;
+  touch-action: none;
   user-select: none;
   transform: translate3d(0, 0, 0) rotate(0deg);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
@@ -247,6 +251,10 @@ h1 {
 
 .phrase-card.is-dragging {
   transition: none;
+}
+
+.phrase-card.is-pinching {
+  transition: transform 120ms ease, border-color 120ms ease;
 }
 
 .phrase-card.is-known {
@@ -260,11 +268,30 @@ h1 {
 .card-meta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
   color: var(--muted);
   font-size: 0.72rem;
   text-transform: uppercase;
   font-weight: 800;
+}
+
+.card-meta-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-mode-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 253, 247, 0.78);
+}
+
+.card-mode-button svg {
+  width: 18px;
+  height: 18px;
 }
 
 .phrase-text {
@@ -302,6 +329,22 @@ h1 {
   color: var(--muted);
   line-height: 1.55;
   font-size: 0.94rem;
+}
+
+.focus-word-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.focus-word-chip {
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: rgba(15, 118, 110, 0.1);
+  color: var(--teal-dark);
+  font-size: 0.82rem;
+  font-weight: 850;
+  line-height: 1;
 }
 
 .example-block {
@@ -406,6 +449,71 @@ h1 {
 
 .is-empty .answer-panel {
   display: block;
+}
+
+body.is-fullscreen-card {
+  background: var(--paper);
+}
+
+body.is-fullscreen-card .app-shell {
+  width: 100vw;
+  max-width: none;
+  min-height: 100svh;
+  height: 100svh;
+  padding: 0;
+  grid-template-rows: 1fr;
+  gap: 0;
+}
+
+body.is-fullscreen-card .topbar,
+body.is-fullscreen-card .stats-strip,
+body.is-fullscreen-card .deck-tabs,
+body.is-fullscreen-card .thumb-zone {
+  display: none;
+}
+
+body.is-fullscreen-card .stage {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  padding: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(15, 118, 110, 0.12), transparent 30rem),
+    var(--paper);
+}
+
+body.is-fullscreen-card .phrase-card {
+  width: 100vw;
+  height: 100svh;
+  min-height: 100svh;
+  max-height: none;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  padding: calc(18px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom));
+  grid-template-rows: auto minmax(118px, max-content) auto 1fr auto;
+}
+
+body.is-fullscreen-card .phrase-text {
+  font-size: clamp(3.15rem, 17vw, 7rem);
+}
+
+body.is-fullscreen-card .source-line {
+  padding-bottom: 4px;
+}
+
+body.is-fullscreen-card .card-mode-button .icon-expand {
+  display: none;
+}
+
+body.is-fullscreen-card .card-mode-button .icon-collapse {
+  display: block;
+}
+
+body.is-fullscreen-card .swipe-label {
+  z-index: 30;
+  top: 50%;
 }
 
 @media (max-width: 360px) {

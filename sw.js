@@ -1,4 +1,4 @@
-const CACHE_NAME = "phraseflow-v1";
+const CACHE_NAME = "phraseflow-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
